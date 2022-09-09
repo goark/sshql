@@ -1,7 +1,6 @@
 package sshql
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -35,16 +34,10 @@ func (d *Dialer) Connect() error {
 			}
 			kh, err := getKnownHosts()
 			if err != nil {
-				return err
+				return errs.Wrap(err)
 			}
 			if err := kh(host, remote, pubKey); err != nil {
-				var keyErr *knownhosts.KeyError
-				if errors.As(err, &keyErr) {
-					if len(keyErr.Want) > 0 {
-						return errs.New(fmt.Sprintf("this %v key is not a key of %s.", pubKey.Type(), host), errs.WithCause(err), errs.WithContext("pubkey_type", pubKey.Type()), errs.WithContext("host", host))
-					}
-					return errs.New(fmt.Sprintf("%s is not trusted.", host), errs.WithCause(err), errs.WithContext("host", host))
-				}
+				return errs.Wrap(err)
 			}
 			return nil
 		}),

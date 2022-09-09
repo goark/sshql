@@ -7,37 +7,36 @@ tasks:
       - task: sshql
       - task: postgres
       - task: mysql
+      - task: test
+      - task: nancy
 
   sshql:
     cmds:
       - go mod tidy -v -go=1.19
-      - go test -shuffle on ./...
-      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.49.0 golangci-lint run --enable gosec --timeout 3m0s ./...
-      - depm list -j | nancy sleuth -n
     sources:
+      - ./go.work
       - ./go.mod
+      - ./go.sum
       - '**/*.go'
 
   postgres:
     dir: pgdrv
     cmds:
       - go mod tidy -v -go=1.19
-      - go test -shuffle on ./...
-      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.49.0 golangci-lint run --enable gosec --timeout 3m0s ./...
-      - depm list -j | nancy sleuth -n
     sources:
+      - ./go.work
       - ./go.mod
+      - ./go.sum
       - '**/*.go'
 
   mysql:
     dir: mysqldrv
     cmds:
       - go mod tidy -v -go=1.19
-      - go test -shuffle on ./...
-      - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.49.0 golangci-lint run --enable gosec --timeout 3m0s ./...
-      - depm list -j | nancy sleuth -n
     sources:
+      - ./go.work
       - ./go.mod
+      - ./go.sum
       - '**/*.go'
 
   clean:
@@ -52,13 +51,18 @@ tasks:
     cmds:
       - go test -shuffle on ./...
       - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.48.0 golangci-lint run --enable gosec --timeout 3m0s ./...
+    sources:
+      - ./go.work
+      - '**/go.mod'
+      - '**/go.sum'
+      - '**/*.go'
 
   nancy:
     desc: Check vulnerability of external packages with Nancy.
     cmds:
       - depm list -j | nancy sleuth -n
-
-  tidy:
-    desc: Remake go.sum file.
-    cmds:
-      - go mod tidy -v -go=1.19
+    sources:
+      - ./go.work
+      - '**/go.mod'
+      - '**/go.sum'
+      - '**/*.go'

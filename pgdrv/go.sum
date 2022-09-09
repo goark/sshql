@@ -1,5 +1,7 @@
-github.com/goark/sshql v0.0.0-20220909105816-d67ca2bd97f1 h1:fDuoPwMIfbifzk/bPbjmQeHEhmAXcfrlpxZ61rmH5d8=
-github.com/goark/sshql v0.0.0-20220909105816-d67ca2bd97f1/go.mod h1:Hri4m7OyVO/BkodnQPM+mpqKQ4U20XmMSGLVysyzFd8=
+github.com/goark/errs v1.1.0 h1:FKnyw4LVyRADIjM8Nj0Up6r0/y5cfADvZAd1E+tthXE=
+github.com/goark/errs v1.1.0/go.mod h1:TtaPEoadm2mzqzfXdkkfpN2xuniCFm2q4JH+c1qzaqw=
+github.com/goark/sshql v0.0.0-20220909141249-a296dfda40f8 h1:QzfdelMFnFNubFW8S0tmPwPFbnOkA52x8OlbTn2LPEE=
+github.com/goark/sshql v0.0.0-20220909141249-a296dfda40f8/go.mod h1:CKO0diQlHb5BpJMi4mT0MlhA5qqrG3Pg+5b+wi6OtgU=
 github.com/lib/pq v1.10.7 h1:p7ZhMD+KsSRozJr34udlUrhboJwWAgCg34+/ZZNvZZw=
 github.com/lib/pq v1.10.7/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 h1:Y/gsMcFOcR+6S6f3YeMKl5g+dZMEWqcz5Czj/GWYbkM=
