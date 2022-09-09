@@ -1,30 +1,53 @@
 package sshql
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 
+	"github.com/goark/errs"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
+	"golang.org/x/crypto/ssh/knownhosts"
 )
 
 // Dialer is authentication provider information.
 type Dialer struct {
-	Hostname   string `json:"hostname"`
-	Port       int    `json:"port"`
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	PrivateKey string `json:"privateKey"`
-	client     *ssh.Client
+	Hostname      string `json:"hostname"`
+	Port          int    `json:"port"`
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	PrivateKey    string `json:"privateKey"`
+	IgnoreHostKey bool   `json:"IgnoreHostKey"`
+	client        *ssh.Client
 }
 
 // Connect starts a client connection to the given SSH server.
 func (d *Dialer) Connect() error {
 	sshConfig := &ssh.ClientConfig{
-		User:            d.Username,
-		Auth:            []ssh.AuthMethod{},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		User: d.Username,
+		Auth: []ssh.AuthMethod{},
+		HostKeyCallback: ssh.HostKeyCallback(func(host string, remote net.Addr, pubKey ssh.PublicKey) error {
+			if d.IgnoreHostKey {
+				return nil
+			}
+			kh, err := getKnownHosts()
+			if err != nil {
+				return err
+			}
+			if err := kh(host, remote, pubKey); err != nil {
+				var keyErr *knownhosts.KeyError
+				if errors.As(err, &keyErr) {
+					if len(keyErr.Want) > 0 {
+						return errs.New(fmt.Sprintf("this %v key is not a key of %s.", pubKey.Type(), host), errs.WithCause(err), errs.WithContext("pubkey_type", pubKey.Type()), errs.WithContext("host", host))
+					}
+					return errs.New(fmt.Sprintf("%s is not trusted.", host), errs.WithCause(err), errs.WithContext("host", host))
+				}
+			}
+			return nil
+		}),
 	}
 
 	if conn, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK")); err == nil {
@@ -44,7 +67,7 @@ func (d *Dialer) Connect() error {
 
 	sshcon, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", d.Hostname, d.Port), sshConfig)
 	if err != nil {
-		return err
+		return errs.Wrap(err)
 	}
 	d.client = sshcon
 	return nil
@@ -58,22 +81,45 @@ func (d *Dialer) Dial(network, address string) (net.Conn, error) {
 func getSigners(keyfile string, password string) ([]ssh.Signer, error) {
 	buf, err := os.ReadFile(keyfile)
 	if err != nil {
-		return nil, err
+		return nil, errs.Wrap(err)
 	}
 
 	if password != "" {
 		k, err := ssh.ParsePrivateKeyWithPassphrase(buf, []byte(password))
 		if err != nil {
-			return nil, err
+			return nil, errs.Wrap(err)
 		}
 		return []ssh.Signer{k}, nil
 	}
 
 	k, err := ssh.ParsePrivateKey(buf)
 	if err != nil {
-		return nil, err
+		return nil, errs.Wrap(err)
 	}
 	return []ssh.Signer{k}, nil
+}
+
+func getKnownHosts() (ssh.HostKeyCallback, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	path := filepath.Join(homeDir, ".ssh", "known_hosts")
+	// create known_hosts file if not exist
+	if err := func() error {
+		f, err := os.OpenFile(path, os.O_CREATE, 0600)
+		if err != nil {
+			return err
+		}
+		return f.Close()
+	}(); err != nil {
+		return nil, errs.Wrap(err)
+	}
+	kh, err := knownhosts.New(path)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	return kh, nil
 }
 
 /**
