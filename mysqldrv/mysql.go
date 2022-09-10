@@ -9,7 +9,7 @@ import (
 	"github.com/goark/sshql"
 )
 
-const DialName = "mysql+ssh"
+const DialName = "ssh+tcp"
 
 // Driver is driver.Driver and pq.Dialer for MySQL via SSH.
 type Driver struct {
