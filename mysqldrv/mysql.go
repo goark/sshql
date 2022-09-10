@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/goark/errs"
 	"github.com/goark/sshql"
 )
 
@@ -12,12 +13,25 @@ const DialName = "mysql+ssh"
 
 // Driver is driver.Driver and pq.Dialer for MySQL via SSH.
 type Driver struct {
-	sshql.Dialer
+	*sshql.Dialer
+}
+
+// New returns new Driver instance.
+func New(d *sshql.Dialer) *Driver {
+	return &Driver{d}
+}
+
+// Dial makes socket connection via SSH (compayible mysql/RegisterDial type).
+func (d *Driver) Dial(address string) (net.Conn, error) {
+	if err := d.Dialer.Connect(); err != nil {
+		return nil, errs.Wrap(err)
+	}
+	return d.Dialer.Dial("tcp", address)
 }
 
 // DialContext makes socket connection via SSH (compayible mysql/RegisterDialContext type).
 func (d *Driver) DialContext(_ context.Context, address string) (net.Conn, error) {
-	return d.Dialer.Dial("tcp", address)
+	return d.Dial(address)
 }
 
 // Register makes a dial available by name "mysql+ssh".

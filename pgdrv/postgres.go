@@ -14,13 +14,18 @@ const DriverName = "postgres+ssh"
 
 // Driver is driver.Driver and pq.Dialer for PostgreSQL via SSH.
 type Driver struct {
-	sshql.Dialer
+	*sshql.Dialer
 }
 
-// var _ pq.Dialer = (*Driver)(nil)
-// var _ driver.Driver = (*Driver)(nil)
+var _ pq.Dialer = (*Driver)(nil)
+var _ driver.Driver = (*Driver)(nil)
 
-// Open opens connection to the server.
+// New returns new Driver instance.
+func New(d *sshql.Dialer) *Driver {
+	return &Driver{d}
+}
+
+// Open opens connection to the server (compatible driver.Driver interface).
 func (d *Driver) Open(s string) (driver.Conn, error) {
 	if err := d.Connect(); err != nil {
 		return nil, err
@@ -28,14 +33,9 @@ func (d *Driver) Open(s string) (driver.Conn, error) {
 	return pq.DialOpen(d, s)
 }
 
-// Dial makes socket connection via SSH.
-func (d *Driver) Dial(network, address string) (net.Conn, error) {
-	return d.Dialer.Dial(network, address)
-}
-
-// DialTimeout makes socket connection via SSH.
+// DialTimeout makes socket connection via SSH (compatible pq.Dialer interface).
 func (d *Driver) DialTimeout(network, address string, timeout time.Duration) (net.Conn, error) {
-	return d.Dialer.Dial(network, address)
+	return d.Dial(network, address)
 }
 
 // Register makes a database driver available by name "postgres+ssh".

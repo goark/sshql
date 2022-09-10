@@ -12,37 +12,24 @@ tasks:
 
   sshql:
     cmds:
+      - rm -f ./go.sum
       - go mod tidy -v -go=1.19
-    sources:
-      - ./go.work
-      - ./go.mod
-      - ./go.sum
-      - '**/*.go'
 
   postgres:
     dir: pgdrv
     cmds:
+      - rm -f ./go.sum
       - go mod tidy -v -go=1.19
-    sources:
-      - ./go.work
-      - ./go.mod
-      - ./go.sum
-      - '**/*.go'
 
   mysql:
     dir: mysqldrv
     cmds:
+      - rm -f ./go.sum
       - go mod tidy -v -go=1.19
-    sources:
-      - ./go.work
-      - ./go.mod
-      - ./go.sum
-      - '**/*.go'
 
   clean:
     desc: Initialize module and build cache.
     cmds:
-      - rm -f ./go.sum
       - go clean -cache
       - go clean -modcache
 
@@ -50,6 +37,8 @@ tasks:
     desc: Test and lint.
     cmds:
       - go test -shuffle on ./...
+      - go test -shuffle on github.com/goark/sshql/pgdrv/...
+      - go test -shuffle on github.com/goark/sshql/mysqldrv/...
       - docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.48.0 golangci-lint run --enable gosec --timeout 3m0s ./...
     sources:
       - ./go.work
