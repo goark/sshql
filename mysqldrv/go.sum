@@ -2,8 +2,8 @@ github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfC
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/goark/errs v1.1.0 h1:FKnyw4LVyRADIjM8Nj0Up6r0/y5cfADvZAd1E+tthXE=
 github.com/goark/errs v1.1.0/go.mod h1:TtaPEoadm2mzqzfXdkkfpN2xuniCFm2q4JH+c1qzaqw=
-github.com/goark/sshql v0.0.0-20220909225505-1d121d38ad95 h1:J6DecWjFdKoL75iiD2o21x0Kz02LogXvtYwhTKHlIGA=
-github.com/goark/sshql v0.0.0-20220909225505-1d121d38ad95/go.mod h1:CKO0diQlHb5BpJMi4mT0MlhA5qqrG3Pg+5b+wi6OtgU=
+github.com/goark/sshql v0.1.0 h1:XIz9WYp7wfRi12R+mI4ghcTrpv2TXGwH5UEgmeDheIw=
+github.com/goark/sshql v0.1.0/go.mod h1:CKO0diQlHb5BpJMi4mT0MlhA5qqrG3Pg+5b+wi6OtgU=
 golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90 h1:Y/gsMcFOcR+6S6f3YeMKl5g+dZMEWqcz5Czj/GWYbkM=
 golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 h1:SrN+KX8Art/Sf4HNj6Zcz06G7VEz+7w9tdXTPOZ7+l4=
