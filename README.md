@@ -7,6 +7,102 @@
 
 This package is forked from [github.com/mattn/pqssh](https://github.com/mattn/pqssh) package.
 
+## Usage
 
+### PostgreSQL over SSH
+
+```go
+package main
+
+import (
+    "database/sql"
+    "fmt"
+    "os"
+
+    "github.com/goark/sshql"
+    "github.com/goark/sshql/pgdrv"
+)
+
+func main() {
+    pgdrv.New(&sshql.Dialer{
+        Hostname:   "sshserver",
+        Port:       22,
+        Username:   "remoteuser",
+        Password:   "passphraseforauthkey",
+        PrivateKey: "/home/username/.ssh/id_eddsa",
+    }).Register()
+
+    db, err := sql.Open(pgdrv.DriverName, "postgres://dbuser:dbpassword@localhost:5432/example?sslmode=disable")
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        return
+    }
+    defer db.Close()
+
+    rows, err := db.Query("SELECT id, name FROM example ORDER BY id")
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        return
+    }
+    for rows.Next() {
+        var id int64
+        var name string
+        if err := rows.Scan(&id, &name); err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            break
+        }
+        fmt.Printf("ID: %d  Name: %s\n", id, name)
+    }
+    rows.Close()
+}
+```
+
+### MySQL over SSH
+
+```go
+package main
+
+import (
+    "database/sql"
+    "fmt"
+    "os"
+
+    "github.com/goark/sshql"
+    "github.com/goark/sshql/mysqldrv"
+)
+
+func main() {
+    mysqldrv.New(&sshql.Dialer{
+        Hostname:   "sshserver",
+        Port:       22,
+        Username:   "remoteuser",
+        Password:   "passphraseforauthkey",
+        PrivateKey: "/home/username/.ssh/id_eddsa",
+    }).RegisterDial()
+
+    db, err := sql.Open("mysql", fmt.Sprintf("dbuser:dbpassword@%s(localhost:3306)/dbname", mysqldrv.DialName))
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        return
+    }
+    defer db.Close()
+
+    rows, err := db.Query("SELECT id, name FROM example ORDER BY id")
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        return
+    }
+    for rows.Next() {
+        var id int64
+        var name string
+        if err := rows.Scan(&id, &name); err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            break
+        }
+        fmt.Printf("ID: %d  Name: %s\n", id, name)
+    }
+    rows.Close()
+}
+```
 
 [sshql]: https://github.com/goark/sshql "goark/sshql: Go SQL drivers over SSH"
