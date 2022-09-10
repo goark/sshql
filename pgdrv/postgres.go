@@ -44,5 +44,5 @@ func (d *Driver) Register() {
 }
 
 /**
- * Frok from github.com/mattn/pqssh package
+ * This codes are forked from github.com/mattn/pqssh package.
  */

@@ -116,5 +116,5 @@ func getKnownHosts() (ssh.HostKeyCallback, error) {
 }
 
 /**
- * This codes are froked from github.com/mattn/pqssh package.
+ * This codes are forked from github.com/mattn/pqssh package.
  */
