@@ -3,7 +3,7 @@ module github.com/goark/sshql/pgdrv
 go 1.19
 
 require (
-	github.com/goark/sshql v0.1.2
+	github.com/goark/sshql v0.1.3
 	github.com/lib/pq v1.10.7
 )
 
