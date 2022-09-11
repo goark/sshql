@@ -1,6 +1,7 @@
 package sshql
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -11,6 +12,8 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/knownhosts"
 )
+
+var ErrNoConnection = errors.New("no SSH connection exists")
 
 // Dialer is authentication provider information.
 type Dialer struct {
@@ -25,6 +28,13 @@ type Dialer struct {
 
 // Connect starts a client connection to the given SSH server.
 func (d *Dialer) Connect() error {
+	if d == nil {
+		return errs.Wrap(ErrNoConnection)
+	}
+	if d.client != nil {
+		d.Close()
+		d.client = nil
+	}
 	sshConfig := &ssh.ClientConfig{
 		User: d.Username,
 		Auth: []ssh.AuthMethod{},
@@ -68,7 +78,18 @@ func (d *Dialer) Connect() error {
 
 // Dial makes socket connection via SSH tunnel.
 func (d *Dialer) Dial(network, address string) (net.Conn, error) {
+	if d == nil || d.client == nil {
+		return nil, errs.Wrap(ErrNoConnection)
+	}
 	return d.client.Dial(network, address)
+}
+
+// Close closes SSH connection.
+func (d *Dialer) Close() error {
+	if d == nil || d.client == nil {
+		return nil
+	}
+	return d.client.Close()
 }
 
 func getSigners(keyfile string, password string) ([]ssh.Signer, error) {

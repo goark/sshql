@@ -42,3 +42,9 @@ jobs:
 
           # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
           # skip-build-cache: true
+      - name: testing sshql
+        run: go test -shuffle on ./...
+      - name: testing pgdrv
+        run: go test -shuffle on ./pgdrv/...
+      - name: testing mysqldrv
+        run: go test -shuffle on ./mysqldrv/...

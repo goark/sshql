@@ -15,7 +15,7 @@
 # vendor/
 
 # Other files and directories
-go.work
+# go.work
 go.work.sum
 *.bak
 work/
