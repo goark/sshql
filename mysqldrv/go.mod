@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/goark/errs v1.1.0
-	github.com/goark/sshql v0.1.2
+	github.com/goark/sshql v0.1.3
 )
 
 require (
