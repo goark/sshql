@@ -109,4 +109,8 @@ func main() {
 }
 ```
 
+## Modules Requirement Graph (UML)
+
+![](./uml.png)
+
 [sshql]: https://github.com/goark/sshql "goark/sshql: Go SQL drivers over SSH"
