@@ -1,50 +1,17 @@
 package pgdrv
 
-import (
-	"database/sql"
-	"database/sql/driver"
-	"net"
-	"time"
+import "net"
 
-	"github.com/lib/pq"
-)
-
-const DriverName = "postgres+ssh"
-
-// Driver is driver.Driver and pq.Dialer for PostgreSQL via SSH.
-type Driver struct {
-	Dialer
-}
-
-var _ pq.Dialer = (*Driver)(nil)
-var _ driver.Driver = (*Driver)(nil)
-
-// New returns new Driver instance.
-func New(d Dialer) *Driver {
-	return &Driver{d}
-}
-
-// Open opens connection to the server (compatible driver.Driver interface).
-func (d *Driver) Open(s string) (driver.Conn, error) {
-	if err := d.Connect(); err != nil {
-		return nil, err
-	}
-	return pq.DialOpen(d, s)
-}
-
-// DialTimeout makes socket connection via SSH (compatible pq.Dialer interface).
-func (d *Driver) DialTimeout(network, address string, timeout time.Duration) (net.Conn, error) {
-	return d.Dial(network, address)
-}
-
-// Register makes a database driver available by name "postgres+ssh".
-func (d *Driver) Register() {
-	sql.Register(DriverName, d)
+// Dialer is interface type for SSH Dialer.
+type Dialer interface {
+	Connect() error
+	Dial(network, address string) (net.Conn, error)
+	Close() error
 }
 
 /* MIT License
  *
- * Copyright 2022 Spiegel (forked from github.com/mattn/pqssh package)
+ * Copyright 2022 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -1,0 +1,22 @@
+@startuml sshql.png
+
+package "sshql module" {
+	class "Dialer" as Dialer1 {}
+}
+
+package "mysqldrv module" {
+	interface "Dialer" as Dialer2 {}
+	class "Driver" as Driver2 {}
+}
+
+package "pgdrv module" {
+	interface "Dialer" as Dialer3 {}
+	class "Driver" as Driver3 {}
+}
+
+Dialer1 ..|> Dialer2
+Dialer1 ..|> Dialer3
+Dialer2 <.. Driver2
+Dialer3 <.. Driver3
+
+@enduml

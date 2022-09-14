@@ -6,18 +6,17 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/goark/errs"
-	"github.com/goark/sshql"
 )
 
 const DialName = "ssh+tcp"
 
 // Driver is driver.Driver and pq.Dialer for MySQL via SSH.
 type Driver struct {
-	*sshql.Dialer
+	Dialer
 }
 
 // New returns new Driver instance.
-func New(d *sshql.Dialer) *Driver {
+func New(d Dialer) *Driver {
 	return &Driver{d}
 }
 

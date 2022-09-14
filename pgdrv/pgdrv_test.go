@@ -2,49 +2,43 @@ package pgdrv
 
 import (
 	"database/sql"
-	"database/sql/driver"
+	"errors"
+	"fmt"
 	"net"
-	"time"
-
-	"github.com/lib/pq"
+	"testing"
 )
 
-const DriverName = "postgres+ssh"
+var ErrConnect = errors.New("error for Connect test")
 
-// Driver is driver.Driver and pq.Dialer for PostgreSQL via SSH.
-type Driver struct {
-	Dialer
+type dummyDialer struct{}
+
+func (d *dummyDialer) Connect() error {
+	return ErrConnect
+}
+func (d *dummyDialer) Dial(network, address string) (net.Conn, error) {
+	return nil, fmt.Errorf("error for Dial test: network = %q, address = %q", network, address)
+}
+func (d *dummyDialer) Close() error {
+	return errors.New("error for Close test")
 }
 
-var _ pq.Dialer = (*Driver)(nil)
-var _ driver.Driver = (*Driver)(nil)
-
-// New returns new Driver instance.
-func New(d Dialer) *Driver {
-	return &Driver{d}
-}
-
-// Open opens connection to the server (compatible driver.Driver interface).
-func (d *Driver) Open(s string) (driver.Conn, error) {
-	if err := d.Connect(); err != nil {
-		return nil, err
+func TestNil(t *testing.T) {
+	var d *dummyDialer // initialize by nil
+	drv := New(d)
+	drv.Register()
+	db, err := sql.Open(DriverName, "foo")
+	if err != nil {
+		t.Errorf("sql.Open()  = '%v', want <nil>.", err)
 	}
-	return pq.DialOpen(d, s)
-}
-
-// DialTimeout makes socket connection via SSH (compatible pq.Dialer interface).
-func (d *Driver) DialTimeout(network, address string, timeout time.Duration) (net.Conn, error) {
-	return d.Dial(network, address)
-}
-
-// Register makes a database driver available by name "postgres+ssh".
-func (d *Driver) Register() {
-	sql.Register(DriverName, d)
+	_, err = db.Query("SELECT id, name FROM tablename ORDER BY id")
+	if !errors.Is(err, ErrConnect) {
+		t.Errorf("<nil>.Open()  = '%v', want '%v'.", err, ErrConnect)
+	}
 }
 
 /* MIT License
  *
- * Copyright 2022 Spiegel (forked from github.com/mattn/pqssh package)
+ * Copyright 2022 Spiegel
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
