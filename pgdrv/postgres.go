@@ -38,8 +38,11 @@ func (d *Driver) DialTimeout(network, address string, timeout time.Duration) (ne
 }
 
 // Register makes a database driver available by name "postgres+ssh".
-func (d *Driver) Register() {
-	sql.Register(DriverName, d)
+func (d *Driver) Register(name string) {
+	if len(name) == 0 {
+		name = DriverName
+	}
+	sql.Register(name, d)
 }
 
 /* MIT License

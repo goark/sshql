@@ -34,8 +34,11 @@ func (d *Driver) DialContext(_ context.Context, address string) (net.Conn, error
 }
 
 // Register makes a dial available by name "mysql+ssh".
-func (d *Driver) RegisterDial() {
-	mysql.RegisterDialContext(DialName, d.DialContext)
+func (d *Driver) RegisterDial(name string) {
+	if len(name) == 0 {
+		name = DialName
+	}
+	mysql.RegisterDialContext(name, d.DialContext)
 }
 
 /* MIT License
