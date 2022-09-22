@@ -31,9 +31,9 @@ func main() {
         Password:   "passphraseforauthkey",
         PrivateKey: "/home/username/.ssh/id_eddsa",
     }
-    pgdrv.New(dialer).Register()
+    pgdrv.New(dialer).Register("postgres+ssh")
 
-    db, err := sql.Open(pgdrv.DriverName, "postgres://dbuser:dbpassword@localhost:5432/example?sslmode=disable")
+    db, err := sql.Open("postgres+ssh", "postgres://dbuser:dbpassword@localhost:5432/example?sslmode=disable")
     if err != nil {
         fmt.Fprintln(os.Stderr, err)
         return
@@ -81,9 +81,9 @@ func main() {
         Password:   "passphraseforauthkey",
         PrivateKey: "/home/username/.ssh/id_eddsa",
     }
-    mysqldrv.New(dialer).RegisterDial()
+    mysqldrv.New(dialer).RegisterDial("ssh+tcp")
 
-    db, err := sql.Open("mysql", fmt.Sprintf("dbuser:dbpassword@%s(localhost:3306)/dbname", mysqldrv.DialName))
+    db, err := sql.Open("mysql", "dbuser:dbpassword@ssh+tcp(localhost:3306)/dbname")
     if err != nil {
         fmt.Fprintln(os.Stderr, err)
         return

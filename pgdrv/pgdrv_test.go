@@ -25,7 +25,7 @@ func (d *dummyDialer) Close() error {
 func TestNil(t *testing.T) {
 	var d *dummyDialer // initialize by nil
 	drv := New(d)
-	drv.Register()
+	drv.Register("")
 	db, err := sql.Open(DriverName, "foo")
 	if err != nil {
 		t.Errorf("sql.Open()  = '%v', want <nil>.", err)
