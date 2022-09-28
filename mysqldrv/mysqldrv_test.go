@@ -1,6 +1,7 @@
 package mysqldrv
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -16,6 +17,9 @@ func (d *dummyDialer) Connect() error {
 	return ErrConnect
 }
 func (d *dummyDialer) Dial(network, address string) (net.Conn, error) {
+	return nil, fmt.Errorf("error for Dial test: network = %q, address = %q", network, address)
+}
+func (d *dummyDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
 	return nil, fmt.Errorf("error for Dial test: network = %q, address = %q", network, address)
 }
 func (d *dummyDialer) Close() error {

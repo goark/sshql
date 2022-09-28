@@ -1,11 +1,14 @@
 package mysqldrv
 
-import "net"
+import (
+	"context"
+	"net"
+)
 
 // Dialer is interface type for SSH Dialer.
 type Dialer interface {
 	Connect() error
-	Dial(network, address string) (net.Conn, error)
+	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 	Close() error
 }
 
