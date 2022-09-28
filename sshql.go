@@ -1,6 +1,7 @@
 package sshql
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -82,6 +83,11 @@ func (d *Dialer) Dial(network, address string) (net.Conn, error) {
 		return nil, errs.Wrap(ErrNoConnection)
 	}
 	return d.client.Dial(network, address)
+}
+
+// DialContext makes socket connection (with context.Context) via SSH tunnel.
+func (d *Dialer) DialContext(_ context.Context, network, address string) (net.Conn, error) {
+	return d.Dial(network, address)
 }
 
 // Close closes SSH connection.
