@@ -20,17 +20,12 @@ func New(d Dialer) *Driver {
 	return &Driver{d}
 }
 
-// Dial makes socket connection via SSH (compayible mysql/RegisterDial type).
-func (d *Driver) Dial(address string) (net.Conn, error) {
+// DialContext makes socket connection via SSH (compayible mysql/RegisterDialContext type).
+func (d *Driver) DialContext(ctx context.Context, address string) (net.Conn, error) {
 	if err := d.Dialer.Connect(); err != nil {
 		return nil, errs.Wrap(err)
 	}
-	return d.Dialer.Dial("tcp", address)
-}
-
-// DialContext makes socket connection via SSH (compayible mysql/RegisterDialContext type).
-func (d *Driver) DialContext(_ context.Context, address string) (net.Conn, error) {
-	return d.Dial(address)
+	return d.Dialer.DialContext(ctx, "tcp", address)
 }
 
 // Register makes a dial available by name "mysql+ssh".
